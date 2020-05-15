@@ -1,5 +1,5 @@
 - hosts: kubernetes
   become: yes
-  user: ubuntu
+  user: fibo
   roles:
   - { role: install-k8s, tags: ["create_cluster_role"]}

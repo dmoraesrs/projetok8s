@@ -1,6 +1,6 @@
 - hosts: all
   become: yes
-  user: ubuntu
+  user: fibo
   gather_facts: no
   pre_tasks:
   - name: 'Update o Repo'
@@ -14,6 +14,7 @@
         {{ item.ip }} {{ item.name }}
       marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
     loop:
-      - { name: master01, ip: 10.0.0.5}
-      - { name: master02, ip: 10.0.0.6 }
-      - { name: k8s-haproxy01, ip: 10.0.0.4 }
+      - { name: node1, ip: 10.15.0.188}
+      - { name: node2, ip: 10.15.0.189}
+      - { name: node3, ip: 10.15.0.190}
+      - { name: haproxy, ip: 10.15.0.191}

@@ -15,19 +15,20 @@
     msg: "[MASTER] K8S_TOKEN_HOLDER - O hash certificate_key {{ hostvars['K8S_TOKEN_HOLDER']['certificate_key'] }}"
 
 - name: Add mappings to /etc/hosts
-  blockinfile:
-    path: /etc/hosts
-    block: |
-      {{ item.ip }} {{ item.name }}
-    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
-  loop:
-    - { name: master01, ip: 10.0.0.5}
-    - { name: master02, ip: 10.0.0.6 }
-    - { name: k8s-haproxy01, ip: 10.0.0.4 }
-    
+    blockinfile:
+      path: /etc/hosts
+      block: |
+        {{ item.ip }} {{ item.name }}
+      marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+    loop:
+      - { name: node1, ip: 10.15.0.188}
+      - { name: node2, ip: 10.15.0.189}
+      - { name: node3, ip: 10.15.0.190}
+      - { name: haproxy, ip: 10.15.0.191}
+
 - name: Adicionando o worker ao cluster k8s
   shell:
     kubeadm join --token={{ hostvars['K8S_TOKEN_HOLDER']['token'] }}
     --discovery-token-ca-cert-hash sha256:{{ hostvars['K8S_TOKEN_HOLDER']['hash'] }} --control-plane --certificate-key {{ hostvars['K8S_TOKEN_HOLDER']['certificate_key'] }}
-    k8s-haproxy01:6443
+    haproxy:6443
 

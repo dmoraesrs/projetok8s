@@ -1,12 +1,12 @@
 - hosts: k8s-master-init
   become: yes
-  user: ubuntu
+  user: fibo
   roles:
   - { role: get-token, tags: ["get_token"]}
 
 
 - hosts: k8s-master-new
   become: yes
-  user: ubuntu
+  user: fibo
   roles:
   - { role: new-master, tags: ["new_join_master_role"]}
