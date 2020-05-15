@@ -9,3 +9,7 @@
 - name: Instalando o Prometheus Operator
   shell: helm install {{ deploy_prometheus }}
   register: prometheus_install
+
+- name: Set to NodePort
+  shell: kubectl patch svc app-prometheus-grafana --type='json' -p '[{"op":"replace","path":"/spec/type","value":"NodePort"}]'
+  register: prometheus_install  

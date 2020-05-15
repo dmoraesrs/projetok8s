@@ -1,0 +1,3 @@
+---
+# tasks file for ha-proxy
+- include:  install.yml

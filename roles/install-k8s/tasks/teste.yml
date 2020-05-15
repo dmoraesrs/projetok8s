@@ -1,0 +1,5 @@
+- name: put shell var into ansible var
+  command: uptime
+  register: my_var
+
+- debug: var=my_var

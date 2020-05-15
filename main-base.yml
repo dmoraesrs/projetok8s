@@ -1,0 +1,19 @@
+- hosts: all
+  become: yes
+  user: ubuntu
+  gather_facts: no
+  pre_tasks:
+  - name: 'Update o Repo'
+    raw: 'apt-get update'
+  - name: 'Instalando o Python'
+    raw: 'apt-get install -y python'
+  - name: Add mappings to /etc/hosts
+    blockinfile:
+      path: /etc/hosts
+      block: |
+        {{ item.ip }} {{ item.name }}
+      marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+    loop:
+      - { name: master01, ip: 10.0.0.5}
+      - { name: master02, ip: 10.0.0.6 }
+      - { name: k8s-haproxy01, ip: 10.0.0.4 }

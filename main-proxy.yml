@@ -1,0 +1,5 @@
+- hosts: ha-proxy
+  become: yes
+  user: ubuntu
+  roles:
+  - { role: ha-proxy, tags: ["ha_proxy"]}

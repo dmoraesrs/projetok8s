@@ -1,0 +1,4 @@
+---
+# tasks file for new-master/
+- include: install.yml
+- include: join-cluster.yml

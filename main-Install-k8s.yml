@@ -1,0 +1,5 @@
+- hosts: kubernetes
+  become: yes
+  user: ubuntu
+  roles:
+  - { role: install-k8s, tags: ["create_cluster_role"]}

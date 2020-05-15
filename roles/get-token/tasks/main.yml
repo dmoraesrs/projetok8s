@@ -1,0 +1,3 @@
+---
+# tasks file for get-token
+- include:  init-cluster.yml

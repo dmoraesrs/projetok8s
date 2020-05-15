@@ -1,3 +1,14 @@
+- name: Add mappings to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ item.ip }} {{ item.name }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+  loop:
+    - { name: master01, ip: 10.0.0.5}
+    - { name: master02, ip: 10.0.0.6 }
+    - { name: k8s-haproxy01, ip: 10.0.0.4 }
+
 - name: Removendo cluster antigo
   command:
     kubeadm reset --force
@@ -5,8 +16,33 @@
 
 - name: Inicializando o cluster k8s
   command:
-    kubeadm init
+    kubeadm init --control-plane-endpoint "k8s-haproxy01:6443" --upload-certs 
   register: kubeadm_init
+  
+#- remote_action: copy content={{ kubeadm_init }} dest=/tmp/file
+#############
+- name: Write results to logfile
+  blockinfile:
+    create: yes
+    path: "/var/log/init.log"
+    insertafter: BOF
+    block: "{{ kubeadm_init.stdout }}"
+    marker: "# {{ inventory_hostname }} {mark}"
+#############
+- name: Change file ownership, group and permissions
+  file:
+    path: /var/log/init.log
+    owner: root
+    group: root
+    mode: '0775'
+
+- name: Get Certificate Key
+  shell: cat /var/log/init.log | grep discovery-token-ca-cert-hash | cut -d ' ' -f6 | sed -n '2p'
+  register: token_ca_cert
+
+- name: Get Certificate Key
+  shell: cat /var/log/init.log | grep certificate-key | cut -d ' ' -f7 | sed -n '1p'
+  register: certificate_key
 
 - name: Criando o diretorio .kube
   file:
@@ -36,6 +72,9 @@
     name: "K8S_TOKEN_HOLDER"
     token: "{{ k8s_token.stdout }}"
     hash: "{{ k8s_master_ca_hash.stdout }}"
+    token_ca_cert: "{{ certificate_key.stdout }}"
+    certificate_key: "{{ certificate_key.stdout }}"
+
 
 - name:
   debug:
@@ -44,3 +83,14 @@
 - name:
   debug:
     msg: "[MASTER] K8S_TOKEN_HOLDER - O hash eh {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+
+- name:
+  debug:
+    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash token_ca_cert {{ hostvars['K8S_TOKEN_HOLDER']['token_ca_cert'] }}"
+
+- name:
+  debug:
+    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash certificate_key {{ hostvars['K8S_TOKEN_HOLDER']['certificate_key'] }}"
+
+#- debug: msg="{{ kubeadm_init.stdout }}"
+#- local_action: copy content={{ kubeadm_init }} dest=/tmp/file

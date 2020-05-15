@@ -1,0 +1,46 @@
+- name: 'Atualizando o Repo'
+  raw: 'apt-get update'
+
+- name: 'Instalando o Python'
+  raw: 'apt-get install -y python'
+
+- name: Install HA Proxy
+  apt:
+    name: "{{ packages }}"
+  vars:
+    packages:
+    - haproxy
+
+- name: Insert/Update /etc/haproxy/haproxy.cfg
+  blockinfile:
+    path: /etc/haproxy/haproxy.cfg
+    block: |
+      frontend k8s
+        bind 10.0.0.4:6443
+        mode tcp
+        option tcplog
+        default_backend ha-k8s
+      backend ha-k8s
+         mode tcp
+         balance roundrobin
+         option tcp-check
+         server master01 10.0.0.5:6443
+         server master02 10.0.0.6:6443
+         server haproxy01 10.0.0.4:6443
+    marker: "# {mark} ANSIBLE MANAGED BLOCK"
+
+- name: Reload service haproxy
+  service:
+    name: haproxy
+    state: reloaded
+
+- name: Add mappings to /etc/hosts
+  blockinfile:
+    path: /etc/hosts
+    block: |
+      {{ item.ip }} {{ item.name }}
+    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
+  loop:
+    - { name: master01, ip: 10.0.0.5}
+    - { name: master02, ip: 10.0.0.6 }
+    - { name: k8s-haproxy01, ip: 10.0.0.4 }

@@ -1,0 +1,40 @@
+- name: Pegando o token para adicionar os workers no cluster
+  shell: kubeadm token list | cut -d ' ' -f1  | sed -n '2p'
+  register: k8s_token
+
+- name: CA Hash
+  shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
+  register: k8s_master_ca_hash
+
+- name: Get Certificate Key
+  shell: cat /var/log/init.log | grep discovery-token-ca-cert-hash | cut -d ' ' -f6 | sed -n '2p'
+  register: token_ca_cert
+
+- name: Get Certificate Key
+  shell: cat /var/log/init.log | grep certificate-key | cut -d ' ' -f7 | sed -n '1p'
+  register: certificate_key
+  
+
+- name: Adicionando o token e o hash em um dummy host
+  add_host:
+    name: "K8S_TOKEN_HOLDER"
+    token: "{{ k8s_token.stdout }}"
+    hash: "{{ k8s_master_ca_hash.stdout }}"
+    token_ca_cert: "{{ certificate_key.stdout }}"
+    certificate_key: "{{ certificate_key.stdout }}"
+
+- name:
+  debug:
+    msg: "[MASTER] K8S_TOKEN_HOLDER - O token eh {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
+
+- name:
+  debug:
+    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash eh {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+
+- name:
+  debug:
+    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash token_ca_cert {{ hostvars['K8S_TOKEN_HOLDER']['token_ca_cert'] }}"
+
+- name:
+  debug:
+    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash certificate_key {{ hostvars['K8S_TOKEN_HOLDER']['certificate_key'] }}"
