@@ -38,7 +38,7 @@
 10.15.0.190
 
 [ha-proxy]
-52.247.71.198
+10.15.0.191
 
 [k8s-workers:vars]
 K8S_MASTER_NODE_IP=haproxy
