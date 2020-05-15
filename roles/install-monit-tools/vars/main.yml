@@ -2,4 +2,4 @@
 # vars file for monit-tools
 
 url_repo_helm: https://kubernetes-charts.storage.googleapis.com
-deploy_prometheus: "--set prometheusOperator.createCustomResource=false app-prometheus stable/prometheus-operator"
+deploy_prometheus: "--set prometheusOperator.createCustomResource=false,grafana.adminPassword=12qwaszx@ app-prometheus stable/prometheus-operator"
