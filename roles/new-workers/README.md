@@ -1,17 +1,37 @@
-Role Name
+Role new-workers
 =========
 
-A brief description of the role goes here.
+This role should be used to add a new server to the cluster with the role of Worker
 
 Requirements
 ------------
 
-Any pre-requisites that may not be covered by Ansible itself or the role should be mentioned here. For instance, if the role uses the EC2 module, it may be a good idea to mention in this section that the boto package is required.
+playbook settings are in the "tasks\install.yml" directory
+
+For the execution of the playbooks it is necessary to play keys between the servers and perform the role of automation server running ansible.
+
+As the link:
+https://www.digitalocean.com/community/tutorials/how-to-set-up-ssh-keys--2
+
+After this configuration, the internet access of the servers must be guaranteed.
+
+* ansible-playbook -i hosts main-base.yml
+* ansible-playbook -i hosts main-Install-k8s.yml
+
+After running the playbooks above, the server that will be the new worker member must be placed in the hosts file in the "[k8s-workers-new]" session. After this configuration run the playbook.
+
+* ansible-playbook -i hosts main-newwrk.yml
+
+After completion, it must be removed from the session and added to the session "[k8s-workers]"
+
 
 Role Variables
 --------------
 
-A description of the settable variables for this role should go here, including any variables that are in defaults/main.yml, vars/main.yml, and any variables that can/should be set via parameters to the role. Any variables that are read from other roles and/or the global scope (ie. hostvars, group vars, etc.) should be mentioned here as well.
+[k8s-workers: vars]
+K8S_MASTER_NODE_IP = haproxy
+K8S_API_SECURE_PORT = 6443
+
 
 Dependencies
 ------------
@@ -22,10 +42,6 @@ Example Playbook
 ----------------
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
-
-    - hosts: servers
-      roles:
-         - { role: username.rolename, x: 42 }
 
 License
 -------

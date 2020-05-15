@@ -1,23 +1,12 @@
-- name: Add mappings to /etc/hosts
-  blockinfile:
-    path: /etc/hosts
-    block: |
-      {{ item.ip }} {{ item.name }}
-    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
-  loop:
-    - { name: master01, ip: 10.0.0.5}
-    - { name: master02, ip: 10.0.0.6 }
-    - { name: k8s-haproxy01, ip: 10.0.0.4 }
-    
 - name:
   debug:
-    msg: "[WORKER] K8S_TOKEN_HOLDER - O token eh {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
+    msg: "[WORKER] K8S_TOKEN_HOLDER - The token is {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
 
 - name:
   debug:
-    msg: "[WORKER] K8S_TOKEN_HOLDER - O hash eh {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+    msg: "[WORKER] K8S_TOKEN_HOLDER - The hash is {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
 
-- name: Adicionando o worker ao cluster k8s
+- name: Add New Workers cluster k8s
   shell:
     kubeadm join --token={{ hostvars['K8S_TOKEN_HOLDER']['token'] }}
     --discovery-token-ca-cert-hash sha256:{{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}
