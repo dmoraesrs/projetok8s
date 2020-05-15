@@ -5,7 +5,7 @@
   pre_tasks:
   - name: 'Update o Repo'
     raw: 'apt-get update'
-  - name: 'Instalando o Python'
+  - name: 'Setup o Python'
     raw: 'apt-get install -y python'
   - name: Add mappings to /etc/hosts
     blockinfile:

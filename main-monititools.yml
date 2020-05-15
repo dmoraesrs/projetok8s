@@ -1,0 +1,11 @@
+- hosts: k8s-master
+  become: yes
+  user: fibo
+  roles:
+  - { role: install-helm, tags: ["install_helm3_role"] }
+
+- hosts: k8s-master
+  become: yes
+  user: fibo
+  roles:
+  - { role: install-monit-tools, tags: ["install_monit_tools_role"] }

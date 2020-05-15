@@ -1,20 +1,9 @@
-- name: Add mappings to /etc/hosts
-  blockinfile:
-    path: /etc/hosts
-    block: |
-      {{ item.ip }} {{ item.name }}
-    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
-  loop:
-    - { name: master01, ip: 10.0.0.5}
-    - { name: master02, ip: 10.0.0.6 }
-    - { name: k8s-haproxy01, ip: 10.0.0.4 }
-
-- name: Removendo cluster antigo
+- name: Clean cluster Old
   command:
     kubeadm reset --force
   register: kubeadm_reset
 
-- name: Inicializando o cluster k8s
+- name: Start cluster k8s
   command:
     kubeadm init --control-plane-endpoint "k8s-haproxy01:6443" --upload-certs 
   register: kubeadm_init
@@ -44,22 +33,22 @@
   shell: cat /var/log/init.log | grep certificate-key | cut -d ' ' -f7 | sed -n '1p'
   register: certificate_key
 
-- name: Criando o diretorio .kube
+- name: Create .kube
   file:
     path: ~/.kube
     state: directory
 
-- name: Linkando o arquivo admin.conf para o ~/.kube/config
+- name: Link file admin.conf to ~/.kube/config
   file:
     src: /etc/kubernetes/admin.conf
     dest: ~/.kube/config
     state: link
 
-- name: Configurando o pod network Weavenet
+- name: Config pod network Weavenet
   shell: kubectl apply -f {{ default_url_weavenet }}
   register: weavenet_result
 
-- name: Pegando o token para adicionar os workers no cluster
+- name: Get token to add the workers in cluster
   shell: kubeadm token list | cut -d ' ' -f1  | sed -n '2p'
   register: k8s_token
 
@@ -67,7 +56,7 @@
   shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
   register: k8s_master_ca_hash
 
-- name: Adicionando o token e o hash em um dummy host
+- name: Add o token and hash in dummy host
   add_host:
     name: "K8S_TOKEN_HOLDER"
     token: "{{ k8s_token.stdout }}"
@@ -78,19 +67,17 @@
 
 - name:
   debug:
-    msg: "[MASTER] K8S_TOKEN_HOLDER - O token eh {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
+    msg: "[MASTER] K8S_TOKEN_HOLDER - The token is {{ hostvars['K8S_TOKEN_HOLDER']['token'] }}"
 
 - name:
   debug:
-    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash eh {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
+    msg: "[MASTER] K8S_TOKEN_HOLDER - The hash is {{ hostvars['K8S_TOKEN_HOLDER']['hash'] }}"
 
 - name:
   debug:
-    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash token_ca_cert {{ hostvars['K8S_TOKEN_HOLDER']['token_ca_cert'] }}"
+    msg: "[MASTER] K8S_TOKEN_HOLDER - The token_ca_cert {{ hostvars['K8S_TOKEN_HOLDER']['token_ca_cert'] }}"
 
 - name:
   debug:
-    msg: "[MASTER] K8S_TOKEN_HOLDER - O hash certificate_key {{ hostvars['K8S_TOKEN_HOLDER']['certificate_key'] }}"
+    msg: "[MASTER] K8S_TOKEN_HOLDER - The certificate_key {{ hostvars['K8S_TOKEN_HOLDER']['certificate_key'] }}"
 
-#- debug: msg="{{ kubeadm_init.stdout }}"
-#- local_action: copy content={{ kubeadm_init }} dest=/tmp/file

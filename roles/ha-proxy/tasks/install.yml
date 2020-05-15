@@ -25,7 +25,7 @@
          balance roundrobin
          option tcp-check
          server master01 10.0.0.5:6443
-         server master02 10.0.0.6:6443
+         #server master02 10.0.0.6:6443
          server haproxy01 10.0.0.4:6443
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
 
@@ -33,14 +33,3 @@
   service:
     name: haproxy
     state: reloaded
-
-- name: Add mappings to /etc/hosts
-  blockinfile:
-    path: /etc/hosts
-    block: |
-      {{ item.ip }} {{ item.name }}
-    marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
-  loop:
-    - { name: master01, ip: 10.0.0.5}
-    - { name: master02, ip: 10.0.0.6 }
-    - { name: k8s-haproxy01, ip: 10.0.0.4 }
