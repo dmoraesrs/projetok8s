@@ -1,5 +1,5 @@
 - hosts: ha-proxy
   become: yes
-  user: ubuntu
+  user: fibo
   roles:
   - { role: ha-proxy, tags: ["ha_proxy"]}
