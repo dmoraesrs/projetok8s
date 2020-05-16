@@ -21,10 +21,10 @@
         {{ item.ip }} {{ item.name }}
       marker: "# {mark} ANSIBLE MANAGED BLOCK {{ item.name }}"
     loop:
-      - { name: node1, ip: 10.15.0.188}
-      - { name: node2, ip: 10.15.0.189}
-      - { name: node3, ip: 10.15.0.190}
-      - { name: haproxy, ip: 10.15.0.191}
+      - { name: node1, ip: 10.2.103.10}
+      - { name: node2, ip: 10.2.103.11}
+      - { name: node3, ip: 10.2.103.12}
+      - { name: haproxy, ip: 10.2.103.13}
 
 - name: Adicionando o worker ao cluster k8s
   shell:
