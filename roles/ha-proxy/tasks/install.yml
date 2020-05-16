@@ -25,8 +25,7 @@
          balance roundrobin
          option tcp-check
          server node1 10.2.103.10:6443
-         #server node2 10.2.103.11:6443
-         #server haproxy 10.2.103.13:6443
+         server node2 10.2.103.11:6443
     marker: "# {mark} ANSIBLE MANAGED BLOCK"
 
 - name: Reload service haproxy

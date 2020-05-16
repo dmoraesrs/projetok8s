@@ -4,9 +4,15 @@
   roles:
   - { role: get-token, tags: ["get_token"]}
 
+  - hosts: k8s-master-new
+  become: yes
+  user: fibo
+  roles:
+  - { role: install-k8s, tags: ["create_cluster_role"]}
 
 - hosts: k8s-master-new
   become: yes
   user: fibo
   roles:
   - { role: new-master, tags: ["new_join_master_role"]}
+

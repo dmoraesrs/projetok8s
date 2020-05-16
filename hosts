@@ -6,20 +6,21 @@
 
 [k8s-master]
 10.15.0.188
+10.15.0.189
 
 [k8s-workers]
 10.15.0.190
 
 
 [k8s-master-new]
-10.15.0.189
+
 
 [k8s-master-init]
 10.15.0.188
 
 
 [k8s-workers-new]
-10.15.0.190
+
 
 [ha-proxy]
 10.2.103.13
