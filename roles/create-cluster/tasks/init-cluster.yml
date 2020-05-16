@@ -5,11 +5,9 @@
 
 - name: Start cluster k8s
   command:
-    kubeadm init --control-plane-endpoint "k8s-haproxy01:6443" --upload-certs 
+    kubeadm init --control-plane-endpoint "haproxy:6443" --upload-certs 
   register: kubeadm_init
   
-#- remote_action: copy content={{ kubeadm_init }} dest=/tmp/file
-#############
 - name: Write results to logfile
   blockinfile:
     create: yes
@@ -17,7 +15,7 @@
     insertafter: BOF
     block: "{{ kubeadm_init.stdout }}"
     marker: "# {{ inventory_hostname }} {mark}"
-#############
+
 - name: Change file ownership, group and permissions
   file:
     path: /var/log/init.log
@@ -52,7 +50,7 @@
   shell: kubeadm token list | cut -d ' ' -f1  | sed -n '2p'
   register: k8s_token
 
-- name: CA Hash
+- name: Get CA Hash
   shell: openssl x509 -pubkey -in /etc/kubernetes/pki/ca.crt | openssl rsa -pubin -outform der 2>/dev/null | openssl dgst -sha256 -hex | sed 's/^.* //'
   register: k8s_master_ca_hash
 
@@ -63,7 +61,6 @@
     hash: "{{ k8s_master_ca_hash.stdout }}"
     token_ca_cert: "{{ certificate_key.stdout }}"
     certificate_key: "{{ certificate_key.stdout }}"
-
 
 - name:
   debug:
