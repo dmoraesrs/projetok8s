@@ -1,0 +1,4 @@
+- name: Removendo o cluster
+  command:
+    kubeadm reset --force
+  register: kubeadm_reset_2

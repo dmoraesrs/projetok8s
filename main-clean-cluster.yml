@@ -1,0 +1,13 @@
+- hosts: workers
+  become: yes
+  user: fibo
+  roles:
+  - { role: clean-cluster, tags: ["clean_cluster_role"]}
+
+- hosts: k8s-master
+  become: yes
+  user: fibo
+  roles:
+  - { role: clean-cluster, tags: ["clean_cluster_m"]}
+
+
